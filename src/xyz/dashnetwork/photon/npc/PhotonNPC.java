@@ -149,6 +149,7 @@ public class PhotonNPC implements NPC {
 
         packetSender.sendAddPlayerInfo(list);
         packetSender.sendSpawn(list);
+        packetSender.sendRotation(list); // MC-109346
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(Photon.getProvidingPlugin(Photon.class),
                 () -> packetSender.sendRemovePlayerInfo(list), 5
