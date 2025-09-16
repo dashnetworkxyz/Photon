@@ -3,6 +3,7 @@ package xyz.dashnetwork.photon.npc;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public class PhotonBuilder {
     private BiConsumer<NPC, Player> attackCallback, interactCallback;
     private PlayerState playerState;
     private SkinState skinState;
+    private ChatColor teamColor;
     private boolean hideNametag;
     private boolean autoView = true;
 
@@ -123,6 +125,11 @@ public class PhotonBuilder {
         return this;
     }
 
+    public PhotonBuilder teamColor(ChatColor color) {
+        this.teamColor = color;
+        return this;
+    }
+
     public PhotonBuilder disableAutoView() {
         this.autoView = false;
         return this;
@@ -153,7 +160,7 @@ public class PhotonBuilder {
             mover = (npc) -> new Mover() {};
 
         return new PhotonNPC(
-                mover, animator, attackCallback, interactCallback, playerState, skinState, location, profile, autoView, hideNametag
+                mover, animator, attackCallback, interactCallback, playerState, skinState, teamColor, location, profile, autoView, hideNametag
         );
     }
 

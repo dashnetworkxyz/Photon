@@ -3,6 +3,7 @@ package xyz.dashnetwork.photon.npc;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -30,7 +31,7 @@ import java.util.function.Function;
 
 public class PhotonNPC implements NPC {
 
-    public static final String NAMETAG_TEAM_NAME = "photon-npc-team";
+    public static final String NAMETAG_TEAM_NAME = "photon-nametag";
 
     private static final List<PhotonNPC> npcs = new CopyOnWriteArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
@@ -38,6 +39,7 @@ public class PhotonNPC implements NPC {
     private final Animator animator;
     private final Mover mover;
     private final BiConsumer<NPC, Player> attackCallback, interactCallback;
+    private final ChatColor teamColor;
     private ViewHandler viewHandler;
 
     private final int entityId = getAndIncrementEntityId();
@@ -48,13 +50,14 @@ public class PhotonNPC implements NPC {
 
     public PhotonNPC(Function<PhotonNPC, Mover> mover, Function<PhotonNPC, Animator> animator,
                      BiConsumer<NPC, Player> attackCallback, BiConsumer<NPC, Player> interactCallback,
-                     PlayerState playerState, SkinState skinState,
+                     PlayerState playerState, SkinState skinState, ChatColor teamColor,
                      Location location, GameProfile profile, boolean autoView, boolean hideNametag) {
         this.packetSender = new PacketSender(this);
         this.animator = animator.apply(this);
         this.animator.setPlayerState(playerState);
         this.animator.setSkinState(skinState);
         this.mover = mover.apply(this);
+        this.teamColor = teamColor;
         this.attackCallback = attackCallback;
         this.interactCallback = interactCallback;
         this.location = location;
@@ -140,7 +143,24 @@ public class PhotonNPC implements NPC {
         if (team == null) {
             team = scoreboard.registerNewTeam(NAMETAG_TEAM_NAME);
             team.setNameTagVisibility(NameTagVisibility.NEVER);
-            team.setPrefix("§6"); // Test
+        }
+
+        team.addEntry(profile.getName());
+    }
+
+    public void setTeamColor(Player player, ChatColor color) {
+        Scoreboard scoreboard = player.getScoreboard();
+
+        if (scoreboard == Bukkit.getScoreboardManager().getMainScoreboard()) {
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+            player.setScoreboard(scoreboard);
+        }
+
+        Team team = scoreboard.getTeam("photon-" + color.name());
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam("photon-" + color.name());
+            team.setPrefix(color.toString());
         }
 
         team.addEntry(profile.getName());
@@ -166,6 +186,9 @@ public class PhotonNPC implements NPC {
 
         if (hideNametag)
             hideNametag(player);
+
+        if (teamColor != null)
+            setTeamColor(player, teamColor);
 
         viewers.add(player);
     }
