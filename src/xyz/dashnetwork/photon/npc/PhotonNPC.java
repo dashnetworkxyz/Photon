@@ -31,8 +31,6 @@ import java.util.function.Function;
 
 public class PhotonNPC implements NPC {
 
-    public static final String NAMETAG_TEAM_NAME = "photon-nametag";
-
     private static final List<PhotonNPC> npcs = new CopyOnWriteArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
     private final PacketSender packetSender;
@@ -138,13 +136,12 @@ public class PhotonNPC implements NPC {
             player.setScoreboard(scoreboard);
         }
 
-        Team team = scoreboard.getTeam(NAMETAG_TEAM_NAME);
+        Team team = scoreboard.getTeam(profile.getName());
 
-        if (team == null) {
-            team = scoreboard.registerNewTeam(NAMETAG_TEAM_NAME);
-            team.setNameTagVisibility(NameTagVisibility.NEVER);
-        }
+        if (team == null)
+            team = scoreboard.registerNewTeam(profile.getName());
 
+        team.setNameTagVisibility(NameTagVisibility.NEVER);
         team.addEntry(profile.getName());
     }
 
@@ -156,13 +153,12 @@ public class PhotonNPC implements NPC {
             player.setScoreboard(scoreboard);
         }
 
-        Team team = scoreboard.getTeam("photon-" + color.name());
+        Team team = scoreboard.getTeam(profile.getName());
 
-        if (team == null) {
-            team = scoreboard.registerNewTeam("photon-" + color.name());
-            team.setPrefix(color.toString());
-        }
+        if (team == null)
+            team = scoreboard.registerNewTeam(profile.getName());
 
+        team.setPrefix(color.toString());
         team.addEntry(profile.getName());
     }
 
