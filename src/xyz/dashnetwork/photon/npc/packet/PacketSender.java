@@ -153,7 +153,7 @@ public class PacketSender {
 
     private DataWatcher createMetadata() {
         DataWatcher watcher = new DataWatcher(null);
-        watcher.a(0, Byte.valueOf(npc.getAnimator().getPlayerState().toBitMask()));
+        watcher.a(0, Byte.valueOf(npc.getAnimator().getPlayerState().getBitMask()));
         watcher.a(1, Short.valueOf((short) (npc.getMover().isGrounded() ? 0 : 300)));
         watcher.a(2, ""); // Custom name
         watcher.a(3, Byte.valueOf((byte) 0)); // Custom name visible
@@ -162,7 +162,7 @@ public class PacketSender {
         watcher.a(7, Integer.valueOf(0)); // Potion color
         watcher.a(8, Byte.valueOf((byte) 0)); // Potion ambient
         watcher.a(9, Byte.valueOf((byte) 0)); // Arrows stuck in entity
-        watcher.a(10, Byte.valueOf(npc.getAnimator().getSkinState().toBitMask()));
+        watcher.a(10, Byte.valueOf(npc.getAnimator().getSkinState().getBitMask()));
         watcher.a(16, Byte.valueOf((byte) 0)); // idk
         watcher.a(17, Float.valueOf(0f)); // Absorption hearts
 

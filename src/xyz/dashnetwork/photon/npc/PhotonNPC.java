@@ -12,6 +12,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import xyz.dashnetwork.photon.Photon;
 import xyz.dashnetwork.photon.npc.animator.Animator;
+import xyz.dashnetwork.photon.npc.animator.PlayerState;
+import xyz.dashnetwork.photon.npc.animator.SkinState;
 import xyz.dashnetwork.photon.npc.move.MoveController;
 import xyz.dashnetwork.photon.npc.move.Mover;
 import xyz.dashnetwork.photon.npc.packet.PacketSender;
@@ -28,7 +30,7 @@ import java.util.function.Function;
 
 public class PhotonNPC implements NPC {
 
-    public static final String NAMETAG_TEAM_NAME = "photon-npc-name";
+    public static final String NAMETAG_TEAM_NAME = "photon-npc-team";
 
     private static final List<PhotonNPC> npcs = new CopyOnWriteArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
@@ -46,9 +48,12 @@ public class PhotonNPC implements NPC {
 
     public PhotonNPC(Function<PhotonNPC, Mover> mover, Function<PhotonNPC, Animator> animator,
                      BiConsumer<NPC, Player> attackCallback, BiConsumer<NPC, Player> interactCallback,
+                     PlayerState playerState, SkinState skinState,
                      Location location, GameProfile profile, boolean autoView, boolean hideNametag) {
         this.packetSender = new PacketSender(this);
         this.animator = animator.apply(this);
+        this.animator.setPlayerState(playerState);
+        this.animator.setSkinState(skinState);
         this.mover = mover.apply(this);
         this.attackCallback = attackCallback;
         this.interactCallback = interactCallback;
@@ -135,6 +140,7 @@ public class PhotonNPC implements NPC {
         if (team == null) {
             team = scoreboard.registerNewTeam(NAMETAG_TEAM_NAME);
             team.setNameTagVisibility(NameTagVisibility.NEVER);
+            team.setPrefix("§6"); // Test
         }
 
         team.addEntry(profile.getName());
@@ -145,7 +151,7 @@ public class PhotonNPC implements NPC {
 
     @Override
     public void addViewer(Player player) {
-        List<Player> list = List.of(player);
+        final List<Player> list = List.of(player);
 
         packetSender.sendAddPlayerInfo(list);
         packetSender.sendSpawn(list);

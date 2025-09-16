@@ -7,9 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import xyz.dashnetwork.photon.npc.animator.Animator;
+import xyz.dashnetwork.photon.npc.animator.PlayerState;
+import xyz.dashnetwork.photon.npc.animator.SkinState;
 import xyz.dashnetwork.photon.npc.move.MoveController;
 import xyz.dashnetwork.photon.npc.move.Mover;
-import xyz.dashnetwork.photon.util.MojangUtil;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -23,6 +24,8 @@ public class PhotonBuilder {
     private Function<PhotonNPC, Animator> animator;
     private Function<PhotonNPC, Mover> mover;
     private BiConsumer<NPC, Player> attackCallback, interactCallback;
+    private PlayerState playerState;
+    private SkinState skinState;
     private boolean hideNametag;
     private boolean autoView = true;
 
@@ -110,6 +113,16 @@ public class PhotonBuilder {
         return this;
     }
 
+    public PhotonBuilder playerFlags(PlayerState.Flag... flags) {
+        this.playerState = new PlayerState(flags);
+        return this;
+    }
+
+    public PhotonBuilder skinFlags(SkinState.Flag... flags) {
+        this.skinState = new SkinState(flags);
+        return this;
+    }
+
     public PhotonBuilder disableAutoView() {
         this.autoView = false;
         return this;
@@ -130,11 +143,17 @@ public class PhotonBuilder {
         if (animator == null)
             animator = Animator::new;
 
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        if (skinState == null)
+            skinState = new SkinState();
+
         if (mover == null)
             mover = (npc) -> new Mover() {};
 
         return new PhotonNPC(
-                mover, animator, attackCallback, interactCallback, location, profile, autoView, hideNametag
+                mover, animator, attackCallback, interactCallback, playerState, skinState, location, profile, autoView, hideNametag
         );
     }
 

@@ -19,6 +19,16 @@ public class Animator {
 
     public PlayerState getPlayerState() { return playerState; }
 
+    public void setPlayerState(PlayerState.Flag... flags) { this.playerState = new PlayerState(flags); }
+
+    public void setPlayerState(PlayerState playerState) { this.playerState = playerState; }
+
+    public boolean getPlayerStateFlag(PlayerState.Flag flag) { return playerState.isFlagSet(flag); }
+
+    public void setSkinState(SkinState.Flag... flags) { this.skinState = new SkinState(flags); }
+
+    public void setSkinState(SkinState skinState) { this.skinState = skinState; }
+
     public SkinState getSkinState() { return skinState; }
 
     public void punch() { npc.getPacketSender().sendArmSwing(npc.getViewers()); }

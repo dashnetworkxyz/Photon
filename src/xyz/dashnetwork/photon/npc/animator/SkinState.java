@@ -2,30 +2,35 @@ package xyz.dashnetwork.photon.npc.animator;
 
 public class SkinState {
 
-    private boolean cape, jacket, leftSleeve, rightSleeve, leftPants, rightPants, hat;
+    private byte mask;
 
-    public SkinState() {
-        cape = true;
-        jacket = true;
-        leftSleeve = true;
-        rightSleeve = true;
-        leftPants = true;
-        rightPants = true;
-        hat = true;
+    public SkinState() { this.mask = Byte.MAX_VALUE; }
+
+    public SkinState(Flag... flags) {
+        for (Flag flag : flags)
+            this.mask |= flag.getBit();
     }
 
-    public byte toBitMask() {
-        byte mask = 0x00;
+    public byte getBitMask() { return mask; }
 
-        if (cape) mask += 0x01;
-        if (jacket) mask += 0x02;
-        if (leftSleeve) mask += 0x04;
-        if (rightSleeve) mask += 0x08;
-        if (leftPants) mask += 0x10;
-        if (rightPants) mask += 0x20;
-        if (hat) mask += 0x40;
+    public boolean isFlagSet(PlayerState.Flag flag) { return (mask & flag.getBit()) != 0; }
 
-        return mask;
+    public enum Flag {
+
+        CAPE((byte) 1),
+        JACKET((byte) 2),
+        LEFT_SLEEVE((byte) 4),
+        RIGHT_SLEEVE((byte) 8),
+        LEFT_PANTS((byte) 16),
+        RIGHT_PANTS((byte) 32),
+        HAT((byte) 64);
+
+        private final byte bit;
+
+        Flag(byte bit) { this.bit = bit; }
+
+        public byte getBit() { return bit; }
+
     }
 
 }
